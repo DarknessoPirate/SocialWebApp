@@ -12,7 +12,7 @@ builder.Services.AddDbContext<DataContext>(opt =>
 {
     opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")); // use Sqlite with default connection string from appsettings.json or appsettings.Development.json depending on mode
 }); // register my DbContext Service
-
+builder.Services.AddCors();
 
 builder.Services.AddOpenApi();
 
@@ -35,7 +35,8 @@ if (app.Environment.IsDevelopment())
 //app.UseHttpsRedirection();
 
 //app.UseAuthorization();
-
+// UseCors allows for data fetching from the angular app with origin stated below
+app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200", "https://localhost:4200")); // must be declared before MapControllers() to work
 app.MapControllers();
 
 app.Run();
