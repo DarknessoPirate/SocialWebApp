@@ -2,6 +2,7 @@ using System.Text;
 using API.Data;
 using API.Extensions;
 using API.Interfaces;
+using API.Middleware;
 using API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -38,6 +39,7 @@ if (app.Environment.IsDevelopment())
 
 //app.UseAuthorization();
 // UseCors allows for data fetching from the angular app with origin stated below
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200", "https://localhost:4200")); // must be declared before MapControllers() to work
 
 app.UseAuthentication(); // before MapControllers, before useAuthorization
