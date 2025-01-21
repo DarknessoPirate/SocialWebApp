@@ -6,7 +6,9 @@ namespace API.DTOs;
 public class RegisterDTO
 {
     [Required]
-    public required string Username {get; set;}
+    [StringLength(maximumLength:8,MinimumLength = 5)]
+    public string Username {get; set;} = String.Empty; // gets rid of the warning
     [Required]
-    public required string Password {get; set;} 
+    [StringLength(maximumLength:8,MinimumLength = 5)]
+    public string Password {get; set;} = String.Empty;
 }
