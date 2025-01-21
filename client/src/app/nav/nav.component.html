@@ -2,25 +2,32 @@
    <div class="container">
       <a class="navbar-brand" routerLink="/">Social App</a>
 
-      @if (accountService.currentUser()) {
+
       <ul class="navbar-nav me-auto mb-2 mb-md-0">
+         @if (accountService.currentUser()) {
+            <li class="nav-item">
+               <a routerLink="/members" routerLinkActive="active" class="nav-link">Suggestions</a>
+            </li>
+            <li class="nav-item">
+               <a routerLink="/lists" routerLinkActive="active" class="nav-link">Lists</a>
+            </li>
+            <li class="nav-item">
+               <a routerLink="/messages" routerLinkActive="active" class="nav-link">Messages</a>
+            </li>
+         }
          <li class="nav-item">
-            <a routerLink="/members" routerLinkActive="active" class="nav-link">Suggestions</a>
-         </li>
-         <li class="nav-item">
-            <a routerLink="/lists" routerLinkActive="active" class="nav-link">Lists</a>
-         </li>
-         <li class="nav-item">
-            <a routerLink="/messages" routerLinkActive="active" class="nav-link">Messages</a>
+            <a routerLink="/errors" routerLinkActive="active" class="nav-link">Errors</a>
          </li>
       </ul>
-      }
+
+
+      
 
       @if (accountService.currentUser()) {
       <div dropdown class="dropdown">
          <button id="button-basic" dropdownToggle type="button" class="btn btn-primary dropdown-toggle"
             aria-controls="dropdown-basic">
-            Welcome <span class="caret"></span>
+            Welcome {{accountService.currentUser()?.username}} <span class="caret"></span>
          </button>
          <div *dropdownMenu="" class="dropdown-menu">
             <a class="dropdown-item">Edit profile</a>

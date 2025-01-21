@@ -1,0 +1,13 @@
+<h4>Internal Server Error</h4>
+@if(error){
+   <h5 class="text-danger">Error: {{error.message}}</h5>
+   <p class="font-weight-bold">occurred at the server</p>
+   <p>What to do next?</p>
+   <ol>
+      <li> Check your connection to the internet</li>
+      <li> Refresh the page</li>
+      <li> If this doesn't help - wait a bit for the server to come back online</li>
+   </ol>
+   <p class="font-weight-bold">Stack trace</p>
+   <code class="mt-5" style="background-color: whitesmoke"> {{error.details}}</code>
+}
