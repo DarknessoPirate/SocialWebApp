@@ -17,14 +17,14 @@ export const routes: Routes = [
       runGuardsAndResolvers: 'always',
       canActivate: [authGuard],
       children: [
-         { path: 'members', component: MemberListComponent},
-         { path: 'members/:id', component: MemberDetailsComponent },
+         { path: 'members', component: MemberListComponent },
+         { path: 'members/:username', component: MemberDetailsComponent },
          { path: 'lists', component: ListsComponent },
          { path: 'messages', component: MessagesComponent },
       ]
    },
-   {path: 'errors', component: TestErrorsComponent},
-   {path: 'not-found', component: NotFoundComponent},
-   {path: 'server-error', component: ServerErrorComponent},
+   { path: 'errors', component: TestErrorsComponent },
+   { path: 'not-found', component: NotFoundComponent },
+   { path: 'server-error', component: ServerErrorComponent },
    { path: '**', component: HomeComponent, pathMatch: 'full' },
 ];

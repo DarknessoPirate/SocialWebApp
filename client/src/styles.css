@@ -1,1 +1,53 @@
-/* You can add global styles to this file, and also import other style files */
+.tab-panel {
+   border: 1px solid #ddd;
+   padding: 10px;
+   border-radius: 4px;
+}
+
+/* Hover state */
+.nav-tabs > li.open, .member-tabset > .nav-tabs > li:hover {
+   border-bottom: 4px solid #fbcdcf; /* Keep the bottom border on hover */
+}
+
+.member-tabset > .nav-tabs > li:hover > a {
+   border: 1px solid #ddd; /* Add top and side borders on hover */
+   border-bottom: none; /* Remove bottom border to avoid conflict with the parent's bottom border */
+   background: none !important;
+   color: #333333;
+}
+
+.member-tabset > .nav-tabs > li:hover > a > i {
+   color: #a6a6a6;
+}
+
+/* Active state */
+.member-tabset > .nav-tabs > li.active {
+   border-bottom: 4px solid #E95420; /* Keep the bottom border on active */
+   position: relative;
+}
+
+.member-tabset > .nav-tabs > li.active > a {
+   border: 1px solid #ddd; /* Add top and side borders on active */
+   border-bottom: none; /* Remove bottom border to avoid conflict with the parent's bottom border */
+   color: #333333;
+}
+
+.member-tabset > .nav-tabs > li.active > a > i {
+   color: #404040;
+}
+
+
+.member-tabset > .nav-tabs > li:hover > a,
+.member-tabset > .nav-tabs > li.active > a {
+   border-top: 1px solid #ddd; 
+   border-left: 1px solid #ddd; 
+   border-right: 1px solid #ddd; 
+}
+
+.member-tabset > .tab-content {
+   margin-top: -3px;
+   background-color: #fff;
+   border: 0;
+   border-top: 1px solid #eee;
+   padding: 15px 0;
+}

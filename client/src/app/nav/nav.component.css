@@ -1,3 +1,18 @@
 .dropdown-toggle, .dropdown-item {
    cursor: pointer;
 }
+
+.navbar-custom {
+   background-color: #252422; /* Darker gray color */
+}
+
+.nav-item .active-nav-item {
+   border-bottom: 3px solid #E95420; /* Change the color to your preference */
+   color: white !important;
+   padding-bottom: 2px; /* Adjust spacing if needed */
+}
+
+.nav-item .nav-link:hover {
+   border-bottom: 3px solid #e2dfdf; /* Hover border color */
+   color: white !important; /* White text color on hover */
+}
