@@ -19,6 +19,8 @@ namespace API.Helpers
             .ForMember(x => x.PhotoUrl, options => options.MapFrom(source => source.Photos.FirstOrDefault(x => x.IsMain)!.Url)); // automapper will set photoUrl to null if no photo found, thus ! null forgiving operator here
 
          CreateMap<Photo, PhotoDTO>();
+
+         CreateMap<MemberUpdateDTO,User>();
       }
    }
 }
