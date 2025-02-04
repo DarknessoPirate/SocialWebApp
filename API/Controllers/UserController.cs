@@ -2,6 +2,7 @@ using System;
 using System.Security.Claims;
 using API.Data;
 using API.DTOs;
+using API.Extensions;
 using API.Interfaces;
 using API.Models;
 using AutoMapper;
@@ -12,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 namespace API.Controllers;
 
 [Authorize]
-public class UsersController(IUserRepository userRepository, IMapper mapper) : BaseApiController
+public class UsersController(IUserRepository userRepository, IMapper mapper, IPhotoService photoService) : BaseApiController
 {
 
 
@@ -41,12 +42,9 @@ public class UsersController(IUserRepository userRepository, IMapper mapper) : B
    [HttpPut]
    public async Task<ActionResult> UpdateUser(MemberUpdateDTO memberUpdateDto)
    {
-      var username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+      
 
-      if (username == null)
-         return BadRequest("No username found in token");
-
-      var user = await userRepository.GetUserByUsernameAsync(username); // entity framework tracks changes made to this user
+      var user = await userRepository.GetUserByUsernameAsync(User.GetUsername()); // entity framework tracks changes made to this user
 
       if (user == null)
          return BadRequest("Could not find user");
@@ -57,5 +55,32 @@ public class UsersController(IUserRepository userRepository, IMapper mapper) : B
          return NoContent();
 
       return BadRequest("Failed to update the user");
+   }
+
+   [HttpPost("add-photo")]
+   public async Task<ActionResult<PhotoDTO>> AddPhoto(IFormFile file){
+
+      var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
+
+      if (user == null) return BadRequest("Cannot update user");
+
+      var result = await photoService.AddPhotoAsync(file);
+
+      if(result.Error != null)
+         return BadRequest(result.Error.Message);
+
+      var photo = new Photo
+      {
+         Url = result.SecureUrl.AbsoluteUri,
+         PublicId = result.PublicId
+      };
+
+      user.Photos.Add(photo);
+
+      if (await userRepository.SaveAllAsync())
+                            // endpoint name (/api/Users) , the username      ,  the resource to return 
+         return CreatedAtAction(nameof(GetUser), new {username = user.Username}, mapper.Map<PhotoDTO>(photo)); // adds location header to the response
+
+      return BadRequest("Problem adding photo");
    }
 }

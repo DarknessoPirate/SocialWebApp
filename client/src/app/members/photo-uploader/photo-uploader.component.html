@@ -1,0 +1,40 @@
+<!-- Drag and Drop Area  -->
+<div
+  ngFileDrop
+  [options]="options"
+  [uploadInput]="uploadInput"
+  (uploadOutput)="onUploadOutput($event)"
+  (drop)="onDrop($event)"
+  (click)="triggerFileInput()"
+  class="drop-zone"
+  [ngClass]="{'drag-over': isDragging}"
+>
+  <p>Drag and drop files here or click to select</p>
+</div>
+
+<!-- File Queue -->
+<div class="file-queue" *ngIf="previews.length > 0">
+   @for (preview of previews; track preview.id) {
+      <div class="file-item">
+         <img [src]="preview.url" class="file-preview" alt="Preview" />
+         <button class="remove-button" (click)="removeFile(preview.id)">✖</button>
+      </div>
+   }
+</div>
+
+<!-- Hidden File Selection Input -->
+<input
+  #fileInput
+  [options]="options"
+  type="file"
+  hidden
+  ngFileSelect
+  [uploadInput]="uploadInput"
+  (uploadOutput)="onUploadOutput($event)"
+  (change)="onFileSelected($event)"
+/>
+
+<!-- Upload Button -->
+<button class="btn btn-success mt-2" (click)="startUpload()" [disabled]="previews.length === 0">
+  Upload
+</button>

@@ -1,0 +1,88 @@
+/* Drag & Drop Area  */
+.drop-zone {
+   width: 100%;
+   height: 150px;
+   border: 2px dashed #ccc;
+   padding: 20px;
+   text-align: center;
+   cursor: pointer;
+   transition: background-color 0.3s, border-color 0.3s;
+   background-color: #f9f9f9;
+   display: flex;
+   border-radius: 16px;
+   align-items: center;
+   justify-content: center;
+   position: relative;
+}
+
+/* drag and drop paragraph */
+.drop-zone p {
+   position: absolute;
+   top: 50%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+   margin: 0;
+   color: #555;
+   font-size: 16px;
+}
+
+/* drag-over state */
+.drop-zone.drag-over {
+   background-color: #e3f2fd !important;
+   border-color: #2196F3 !important;
+   box-shadow: 0 0 10px rgba(33, 150, 243, 0.5);
+}
+
+/* Image queue grid (fixed layout for consistency) */
+.file-queue {
+   display: grid;
+   grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* Responsive grid */
+   gap: 10px;
+   max-width: 600px;
+   margin-top: 10px;
+}
+
+/* image container with rounded borders */
+.file-item {
+   position: relative;
+   width: 100px;
+   height: 100px;
+   overflow: visible;
+   border-radius: 16px; 
+   border: 2px solid #000;
+}
+
+/* image preview */
+.file-preview {
+   width: 100%;
+   height: 100%;
+   object-fit: cover;
+   border-radius: 16px; 
+}
+
+/* remove button in the corner */
+.remove-button {
+   position: absolute;
+   top: 0;
+   right: 0;
+   transform: translate(30%, -30%); /* places button into the corner of the image*/
+   background: white;
+   color: black;
+   border: 1px solid black;
+   cursor: pointer;
+   padding: 5px;
+   font-size: 14px;
+   border-radius: 50%;
+   width: 24px;
+   height: 24px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* remove button hover effect  */
+.remove-button:hover {
+   background:rgb(209, 209, 209);
+   color: white;
+}

@@ -1,0 +1,13 @@
+<div class="row">
+   <!-- Display existing photos -->
+   @for (photo of member().photos; track photo.id) {
+   <div class="col-3">
+      <img src="{{photo.url}}" alt="photo of {{member().knownAs}}" class="img-thumbnail mb-1">
+      <div class="text-center mb-2">
+         <button class="btn btn-primary me-2">Set as profile</button>
+         <button class="btn btn-danger"><i class="fa fa-trash"></i></button>
+      </div>
+   </div>
+   }
+</div>
+

@@ -1,5 +1,6 @@
 using API.Data;
 using API.Data.Repositories;
+using API.Helpers;
 using API.Interfaces;
 using API.Services;
 using Microsoft.EntityFrameworkCore;
@@ -16,11 +17,15 @@ public static class ApplicationServiceExtensions
       services.AddDbContext<DataContext>(opt =>
       {
          opt.UseSqlite(config.GetConnectionString("DefaultConnection")); // use Sqlite with default connection string from appsettings.json or appsettings.Development.json depending on mode
-      }); // register my DbContext Service
+      }); // register  DbContext Service
+
       services.AddCors();
+      // Add services for di
       services.AddScoped<ITokenService, TokenService>();
       services.AddScoped<IUserRepository, UserRepository>();
+      services.AddScoped<IPhotoService, PhotoService>();
       services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies()); // code to find all the automapper profiles by searching the assemblies
+      services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings")); // fill CloudinarySettings class with fields from appsettings
       return services;
 
    }
