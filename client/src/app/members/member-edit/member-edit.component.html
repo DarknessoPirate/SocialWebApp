@@ -17,7 +17,7 @@
 
    <div class="col-4">
       <div class="card">
-         <img src="{{member.photoUrl || './assets/user.png'}}" alt="{{member.knownAs}}" class="card-img img-thumbnail">
+         <img [src]="member.photoUrl || 'assets/user.png'" alt="{{member.knownAs}}" class="card-img img-thumbnail">
          <div class="card-body">
             <div>
                <strong> Location: </strong>
@@ -69,7 +69,10 @@
 
          </tab>
          <tab heading="Edit photos">
-            <app-photo-editor [member]="member"></app-photo-editor>
+            <app-photo-editor 
+               [member]="member"
+               (memberChanged)="onMemberChange($event)">
+            </app-photo-editor>
          </tab>
          <tab heading="Upload photo">
             <app-photo-uploader (uploadFinished)="loadMember()"></app-photo-uploader>

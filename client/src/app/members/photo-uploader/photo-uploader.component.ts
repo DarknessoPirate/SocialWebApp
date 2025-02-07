@@ -29,7 +29,7 @@ export class PhotoUploaderComponent {
    uploadedCount: number = 0;
 
    uploadedImageUrl: string | null = null;
-   options: UploaderOptions = { concurrency: 1, maxUploads: 3, allowedContentTypes: ['image/jpeg', 'image/png'] };
+   options: UploaderOptions = { concurrency: 1, maxUploads: 3, allowedContentTypes: ['image/jpeg', 'image/png'], maxFileSize: 15*1024*1024 };
 
 
 

@@ -4,28 +4,40 @@
 
       <ul class="navbar-nav me-auto mb-2 mb-md-0">
          @if (accountService.currentUser()) {
-            <li class="nav-item">
-               <a routerLink="/members" routerLinkActive="active-nav-item" class="nav-link">Suggestions</a>
-            </li>
-            <li class="nav-item">
-               <a routerLink="/lists" routerLinkActive="active-nav-item" class="nav-link">Lists</a>
-            </li>
-            <li class="nav-item">
-               <a routerLink="/messages" routerLinkActive="active-nav-item" class="nav-link">Messages</a>
-            </li>
+         <li class="nav-item">
+            <a routerLink="/members" routerLinkActive="active-nav-item"
+               class="nav-link">Suggestions</a>
+         </li>
+         <li class="nav-item">
+            <a routerLink="/lists" routerLinkActive="active-nav-item"
+               class="nav-link">Lists</a>
+         </li>
+         <li class="nav-item">
+            <a routerLink="/messages" routerLinkActive="active-nav-item"
+               class="nav-link">Messages</a>
+         </li>
          }
          <li class="nav-item">
-            <a routerLink="/errors" routerLinkActive="active-nav-item" class="nav-link">Errors</a>
+            <a routerLink="/errors" routerLinkActive="active-nav-item"
+               class="nav-link">Errors</a>
          </li>
       </ul>
 
       @if (accountService.currentUser()) {
+      <div class="profile-picture">
+         <img
+            [src]="accountService.currentUser()?.photoUrl || 'assets/user.png'"
+            alt="main image" width="40" height="40">
+      </div>
       <div dropdown class="dropdown">
-         <button id="button-basic" dropdownToggle type="button" class="btn btn-primary dropdown-toggle"
+
+         <button id="button-basic" dropdownToggle type="button"
+            class="btn btn-primary dropdown-toggle"
             aria-controls="dropdown-basic">
-            Welcome {{accountService.currentUser()?.username}} <span class="caret"></span>
+            Welcome {{accountService.currentUser()?.username}} <span
+               class="caret"></span>
          </button>
-         <div *dropdownMenu="" class="dropdown-menu">
+         <div *dropdownMenu class="dropdown-menu">
             <a class="dropdown-item" routerLink="/member/edit">Edit profile</a>
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" (click)="logout()">Logout</a>
@@ -34,9 +46,12 @@
       }
 
       @if (!accountService.currentUser()){
-      <form #loginForm="ngForm" (ngSubmit)="login()" class="d-flex" autocomplete="off">
-         <input name="username" [(ngModel)]="model.username" class="form-control me-2" placeholder="Username">
-         <input name="password" [(ngModel)]="model.password" class="form-control me-2" placeholder="Password"
+      <form #loginForm="ngForm" (ngSubmit)="login()" class="d-flex"
+         autocomplete="off">
+         <input name="username" [(ngModel)]="model.username"
+            class="form-control me-2" placeholder="Username">
+         <input name="password" [(ngModel)]="model.password"
+            class="form-control me-2" placeholder="Password"
             type="password">
          <button class="btn btn-outline-success" type="submit">Login</button>
       </form>
