@@ -21,6 +21,9 @@ namespace API.Helpers
          CreateMap<Photo, PhotoDTO>();
 
          CreateMap<MemberUpdateDTO,User>();
+         CreateMap<RegisterDTO, User>();
+
+         CreateMap<string,DateOnly>().ConvertUsing(s => DateOnly.Parse(s));
       }
    }
 }

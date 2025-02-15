@@ -4,6 +4,7 @@ using API.Data;
 using API.DTOs;
 using API.Interfaces;
 using API.Models;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,9 +13,8 @@ using Microsoft.EntityFrameworkCore;
 namespace API.Controllers
 {
 
-   public class AccountController(DataContext context, ITokenService tokenService) : BaseApiController
+   public class AccountController(DataContext context, ITokenService tokenService, IMapper mapper) : BaseApiController
    {
-      [Authorize]
       [HttpPost("register")]
       public async Task<ActionResult<UserDTO>> Register(RegisterDTO registerDto)
       {
@@ -22,25 +22,23 @@ namespace API.Controllers
          if (await UserExists(registerDto.Username))
             return BadRequest("Username is taken");
 
-         return Ok();
+         using var hmac = new HMACSHA512();
+         var user = mapper.Map<User>(registerDto);
+         user.Username = registerDto.Username.ToLower();
+         user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password));
+         user.PasswordSalt = hmac.Key;
 
-         // using var hmac = new HMACSHA512();
 
-         // var user = new User
-         // {
-         //     Username = registerDto.Username.ToLower(),
-         //     PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)),
-         //     PasswordSalt = hmac.Key
-         // };
 
-         // context.Users.Add(user);
-         // await context.SaveChangesAsync();
 
-         // return new UserDTO
-         // {
-         //     Username = user.Username,
-         //     Token = tokenService.CreateToken(user)
-         // };
+         context.Users.Add(user);
+
+         return new UserDTO
+         {
+            Username = user.Username,
+            KnownAs = user.KnownAs,
+            Token = tokenService.CreateToken(user)
+         };
       }
 
       [HttpPost("login")]
@@ -65,6 +63,7 @@ namespace API.Controllers
          return new UserDTO
          {
             Username = user.Username,
+            KnownAs = user.KnownAs,
             Token = tokenService.CreateToken(user),
             PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url
          };
@@ -73,8 +72,12 @@ namespace API.Controllers
 
       private async Task<bool> UserExists(string username)
       {
-         return await context.Users.AnyAsync(x => x.Username.ToLower() == username.ToLower());
+         Console.WriteLine($"Checking if '{username}' already exists in database...");
+         return await context.Users
+            .AsNoTracking()  // Ensure no cache is used
+            .AnyAsync(x => x.Username.ToLower() == username);
       }
+
 
    }
 }
