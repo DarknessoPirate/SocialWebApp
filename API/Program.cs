@@ -41,11 +41,8 @@ if (app.Environment.IsDevelopment())
       options
            .WithTitle("Darknesso WebAPI")
            .WithTheme(ScalarTheme.DeepSpace)
-           .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient)
-           .WithHttpBearerAuthentication(bearer =>
-           // temporary short-lived token that will no longer work later
-               bearer.Token = "yJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJoYXJyaXMiLCJuYmYiOjE3Mzc2MzgyMTgsImV4cCI6MTczODI0MzAxOCwiaWF0IjoxNzM3NjM4MjE4fQ.53OV5Tv6bG9PTxEww6tA64Jw1B3FYbbxJomVRHcV5ARxc64yvEetkpFulzttXpLi1N-7lb513kKXnkRQ0BKMmQ"
-           );
+           .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
+           
    });
 }
 //app.UseHttpsRedirection();

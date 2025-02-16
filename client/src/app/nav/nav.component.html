@@ -34,7 +34,7 @@
          <button id="button-basic" dropdownToggle type="button"
             class="btn btn-primary dropdown-toggle"
             aria-controls="dropdown-basic">
-            Welcome {{accountService.currentUser()?.username}} <span
+            Welcome {{accountService.currentUser()?.knownAs}} <span
                class="caret"></span>
          </button>
          <div *dropdownMenu class="dropdown-menu">

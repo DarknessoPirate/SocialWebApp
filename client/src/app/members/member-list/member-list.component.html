@@ -1,6 +1,62 @@
 <div class="row">
 
-   @for (member of memberService.members(); track member.id) {
+   <div class="text-center mt-3">
+      <h2> People found -
+         {{memberService.paginatedResult()?.pageDetails?.totalItems}}</h2>
+   </div>
+
+   <div class="container mt-3 d-flex justify-content-center">
+      <form #form="ngForm" class="d-flex mb-3 " (ngSubmit)="loadMembers()">
+         <div class="d-flex mx-2">
+            <label class="col-form-label">Age from:</label>
+            <input type="number"
+               class="form-control ms-1 filter-text"
+               name="minAge"
+               [(ngModel)]="userParams.minAge">
+         </div>
+         <div class="d-flex mx-2">
+            <label class="col-form-label">Age to:</label>
+            <input type="number"
+               class="form-control ms-1 filter-text"
+               name="maxAge"
+               [(ngModel)]="userParams.maxAge">
+         </div>
+         <div class="d-flex mx-2">
+            <label class="col-form-label">Gender:</label>
+            <select name="gender"
+               class="form-select ms-1 filter-select"
+               [(ngModel)]="userParams.gender">
+               @for (gender of genderList; track gender.value) {
+                  <option [value]="gender.value">
+                     {{gender.display}}
+                  </option>
+               }
+            </select>
+         </div>
+
+         <button class="btn btn-primary ms-1" type="submit">Apply filters</button>
+         <button class="btn btn-danger ms-1" type="button" (click)="resetFilters()">Reset filters</button>
+
+
+      </form>
+
+   </div>
+
+   @if (memberService.paginatedResult()?.pageDetails) {
+   <div class="d-flex justify-content-center">
+      <pagination [boundaryLinks]="true"
+         [totalItems]="memberService.paginatedResult()?.pageDetails!.totalItems"
+         [itemsPerPage]="memberService.paginatedResult()?.pageDetails!.itemsPerPage"
+         (pageChanged)="pageChanged($event)"
+         [maxSize]="10"
+         previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;"
+         lastText="&raquo;">
+      </pagination>
+   </div>
+
+   }
+
+   @for (member of memberService.paginatedResult()?.items; track member.id) {
    <div class="col-2">
       <app-member-card [member]="member"></app-member-card>
    </div>

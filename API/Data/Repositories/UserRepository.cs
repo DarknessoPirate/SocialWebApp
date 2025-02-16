@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API.DTOs;
+using API.Helpers;
 using API.Interfaces;
 using API.Models;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Data.Repositories
@@ -21,11 +23,23 @@ namespace API.Data.Repositories
             .SingleOrDefaultAsync();
       }
 
-      public async Task<IEnumerable<MemberDTO>> GetMembersAsync()
+      public async Task<PageResult<MemberDTO>> GetMembersAsync(UserParams userParams)
       {
-         return await context.Users
-            .ProjectTo<MemberDTO>(mapper.ConfigurationProvider) // map the entities to member dto after select
-            .ToListAsync();
+         var query = context.Users.AsQueryable();
+
+         // exclude self 
+         query = query.Where(x => x.Username != userParams.CurrentUsername);
+
+         // gender filter
+         if (userParams.Gender != null)
+            query = query.Where(x => x.Gender == userParams.Gender);
+
+         var minDob = DateOnly.FromDateTime(DateTime.Today.AddYears(-userParams.MaxAge - 1));
+         var maxDob = DateOnly.FromDateTime(DateTime.Today.AddYears(-userParams.MinAge));
+
+         query = query.Where(x => x.DateOfBirth >= minDob && x.DateOfBirth <= maxDob);   
+
+         return await PageResult<MemberDTO>.CreateAsync(query.ProjectTo<MemberDTO>(mapper.ConfigurationProvider), userParams.PageNumber, userParams.PageSize);
       }
 
       public async Task<User?> GetUserByIdAsync(int id)
