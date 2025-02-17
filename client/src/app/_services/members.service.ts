@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { Member } from '../_models/member';
@@ -14,11 +14,15 @@ import { UserParams } from '../_models/userParams';
 export class MembersService {
    private http = inject(HttpClient);
    baseUrl = environment.apiUrl;
-   // members = signal<Member[]>([]);
    paginatedResult = signal<PageResult<Member[]> | null>(null);
+   memberCache = new Map(); // map for caching responses for specific set userParams
 
    getMembers(userParams: UserParams) {
+      // check if response exists for given params
+      const response = this.memberCache.get(Object.values(userParams).join('-'))
+      if (response) return this.setPaginatedResult(response); // if response already in cache, load it from cache instead of api
       
+      // set headers to use for filtering in api
       let params = this.setPaginationHeaders(userParams.pageNumber, userParams.pageSize);
       params = params.append('minAge', userParams.minAge);
       params = params.append('maxAge', userParams.maxAge);
@@ -26,14 +30,22 @@ export class MembersService {
       if(userParams.gender)
          params = params.append('gender', userParams.gender);
 
+      if(userParams.orderBy)
+         params = params.append('orderBy', userParams.orderBy);
 
+      // make an api call if response not in cache
       return this.http.get<Member[]>(this.baseUrl + 'users', { observe: 'response', params }).subscribe({
          next: response => {
-            this.paginatedResult.set({
-               items: response.body as Member[],
-               pageDetails: JSON.parse(response.headers.get('Pagination')!)
-            })
+            this.setPaginatedResult(response) // populare result variable with response data
+            this.memberCache.set(Object.values(userParams).join('-'), response); // save response in cache
          }
+      })
+   }
+
+   private setPaginatedResult(response: HttpResponse<Member[]>){
+      this.paginatedResult.set({
+         items: response.body as Member[],
+         pageDetails: JSON.parse(response.headers.get('Pagination')!)
       })
    }
 

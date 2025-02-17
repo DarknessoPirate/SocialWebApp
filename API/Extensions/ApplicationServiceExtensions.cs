@@ -24,6 +24,7 @@ public static class ApplicationServiceExtensions
       services.AddScoped<ITokenService, TokenService>();
       services.AddScoped<IUserRepository, UserRepository>();
       services.AddScoped<IPhotoService, PhotoService>();
+      services.AddScoped<ActivityLogger>();
       services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies()); // code to find all the automapper profiles by searching the assemblies
       services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings")); // fill CloudinarySettings class with fields from appsettings
       return services;
