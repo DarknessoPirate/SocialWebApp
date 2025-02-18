@@ -12,20 +12,20 @@
             <input type="number"
                class="form-control ms-1 filter-text"
                name="minAge"
-               [(ngModel)]="userParams.minAge">
+               [(ngModel)]="memberService.userParams().minAge">
          </div>
          <div class="d-flex mx-2">
             <label class="col-form-label">Age to:</label>
             <input type="number"
                class="form-control ms-1 filter-text"
                name="maxAge"
-               [(ngModel)]="userParams.maxAge">
+               [(ngModel)]="memberService.userParams().maxAge">
          </div>
          <div class="d-flex mx-2">
             <label class="col-form-label">Gender:</label>
             <select name="gender"
                class="form-select ms-1 filter-select"
-               [(ngModel)]="userParams.gender">
+               [(ngModel)]="memberService.userParams().gender">
                @for (gender of genderList; track gender.value) {
                <option [value]="gender.value">
                   {{gender.display}}
@@ -47,7 +47,7 @@
                   name="orderBy"
                   (click)="loadMembers()"
                   btnRadio="lastActive"
-                  [(ngModel)]="userParams.orderBy">Last Active
+                  [(ngModel)]="memberService.userParams().orderBy">Last Active
                </button>
 
                <button
@@ -56,7 +56,7 @@
                   name="orderBy"
                   (click)="loadMembers()"
                   btnRadio="created"
-                  [(ngModel)]="userParams.orderBy">Newest members
+                  [(ngModel)]="memberService.userParams().orderBy">Newest members
                </button>
 
             </div>
@@ -71,6 +71,7 @@
       <pagination [boundaryLinks]="true"
          [totalItems]="memberService.paginatedResult()?.pageDetails!.totalItems"
          [itemsPerPage]="memberService.paginatedResult()?.pageDetails!.itemsPerPage"
+         [(ngModel)]="memberService.paginatedResult()?.pageDetails!.currentPage"
          (pageChanged)="pageChanged($event)"
          [maxSize]="10"
          previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;"

@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable, model, signal } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { Member } from '../_models/member';
 import { AccountService } from './account.service';
@@ -16,33 +16,39 @@ export class MembersService {
    baseUrl = environment.apiUrl;
    paginatedResult = signal<PageResult<Member[]> | null>(null);
    memberCache = new Map(); // map for caching responses for specific set userParams
+   userParams = signal<UserParams>(new UserParams());
 
-   getMembers(userParams: UserParams) {
+
+   getMembers() {
       // check if response exists for given params
-      const response = this.memberCache.get(Object.values(userParams).join('-'))
+      const response = this.memberCache.get(Object.values(this.userParams).join('-'))
       if (response) return this.setPaginatedResult(response); // if response already in cache, load it from cache instead of api
-      
+
       // set headers to use for filtering in api
-      let params = this.setPaginationHeaders(userParams.pageNumber, userParams.pageSize);
-      params = params.append('minAge', userParams.minAge);
-      params = params.append('maxAge', userParams.maxAge);
+      let params = this.setPaginationHeaders(this.userParams().pageNumber, this.userParams().pageSize);
+      params = params.append('minAge', this.userParams().minAge);
+      params = params.append('maxAge', this.userParams().maxAge);
 
-      if(userParams.gender)
+      const userParams = this.userParams(); // save the current state before checks
+
+      if (userParams?.gender !== undefined) {
          params = params.append('gender', userParams.gender);
+      }
 
-      if(userParams.orderBy)
+      if (userParams?.orderBy !== undefined) {
          params = params.append('orderBy', userParams.orderBy);
+      }
 
       // make an api call if response not in cache
       return this.http.get<Member[]>(this.baseUrl + 'users', { observe: 'response', params }).subscribe({
          next: response => {
             this.setPaginatedResult(response) // populare result variable with response data
-            this.memberCache.set(Object.values(userParams).join('-'), response); // save response in cache
+            this.memberCache.set(Object.values(this.userParams()).join('-'), response); // save response in cache
          }
       })
    }
 
-   private setPaginatedResult(response: HttpResponse<Member[]>){
+   private setPaginatedResult(response: HttpResponse<Member[]>) {
       this.paginatedResult.set({
          items: response.body as Member[],
          pageDetails: JSON.parse(response.headers.get('Pagination')!)
@@ -60,9 +66,18 @@ export class MembersService {
       return params
    }
 
+   resetUserParams() {
+      this.userParams.set(new UserParams());
+   }
+
    getMember(username: string) {
-      // const member = this.members().find(x => x.username == username)
-      // if (member !== undefined) return of(member); // return member as observable
+      // get the array of responses, find response bodies and append the bodies to empty array creating the array of user infos
+      const member: Member = [...this.memberCache.values()]
+         .reduce((arr, current) => arr.concat(current.body), [])
+         .find((m: Member) => m.username === username);
+
+
+      if (member) return of(member);
 
       return this.http.get<Member>(this.baseUrl + 'users/' + username); // if user not found in list make the api call
    }

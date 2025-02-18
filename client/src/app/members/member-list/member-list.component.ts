@@ -14,9 +14,7 @@ import {ButtonsModule} from 'ngx-bootstrap/buttons'
    styleUrl: './member-list.component.css'
 })
 export class MemberListComponent implements OnInit {
-   private cdRef = inject(ChangeDetectorRef);
    memberService = inject(MembersService);
-   userParams = new UserParams();
    genderList = [{ value: 'male', display: "Male" }, { value: 'female', display: 'Female' }]
 
    ngOnInit(): void {
@@ -25,27 +23,19 @@ export class MemberListComponent implements OnInit {
    }
 
    loadMembers() {
-      this.cdRef.detectChanges();
-      this.memberService.getMembers(this.userParams);
+      this.memberService.getMembers();
    }
 
    resetFilters() {
-      this.userParams = new UserParams();
+      this.memberService.resetUserParams();
       this.loadMembers()
    }
 
    pageChanged(event: any) {
-      if (this.userParams.pageNumber !== event.page) {
-         this.userParams.pageNumber = event.page;
+      if (this.memberService.userParams().pageNumber !== event.page) {
+         this.memberService.userParams().pageNumber = event.page;
          this.loadMembers()
       }
-   }
-
-   updateOrderBy(orderBy: string) {
-      console.log("Before change:", this.userParams.orderBy);
-      this.userParams.orderBy = orderBy;
-      console.log("After change:", this.userParams.orderBy);
-      this.loadMembers();
    }
    
 }
