@@ -7,6 +7,7 @@ import { of, tap } from 'rxjs';
 import { Photo } from '../_models/photo';
 import { PageResult } from '../_models/pagination';
 import { UserParams } from '../_models/userParams';
+import { setPaginatedResult, setPaginationHeaders } from '../_helpers/paginationHelper';
 
 @Injectable({
    providedIn: 'root'
@@ -22,10 +23,10 @@ export class MembersService {
    getMembers() {
       // check if response exists for given params
       const response = this.memberCache.get(Object.values(this.userParams).join('-'))
-      if (response) return this.setPaginatedResult(response); // if response already in cache, load it from cache instead of api
+      if (response) return setPaginatedResult(response, this.paginatedResult); // if response already in cache, load it from cache instead of api
 
       // set headers to use for filtering in api
-      let params = this.setPaginationHeaders(this.userParams().pageNumber, this.userParams().pageSize);
+      let params = setPaginationHeaders(this.userParams().pageNumber, this.userParams().pageSize);
       params = params.append('minAge', this.userParams().minAge);
       params = params.append('maxAge', this.userParams().maxAge);
 
@@ -42,29 +43,13 @@ export class MembersService {
       // make an api call if response not in cache
       return this.http.get<Member[]>(this.baseUrl + 'users', { observe: 'response', params }).subscribe({
          next: response => {
-            this.setPaginatedResult(response) // populare result variable with response data
+            setPaginatedResult(response, this.paginatedResult) // populare result variable with response data
             this.memberCache.set(Object.values(this.userParams()).join('-'), response); // save response in cache
          }
       })
    }
 
-   private setPaginatedResult(response: HttpResponse<Member[]>) {
-      this.paginatedResult.set({
-         items: response.body as Member[],
-         pageDetails: JSON.parse(response.headers.get('Pagination')!)
-      })
-   }
 
-   private setPaginationHeaders(pageNumber: number, pageSize: number) {
-      let params = new HttpParams();
-
-      if (pageNumber && pageSize) {
-         params = params.append('pageNumber', pageNumber);
-         params = params.append('pageSize', pageSize);
-      }
-
-      return params
-   }
 
    resetUserParams() {
       this.userParams.set(new UserParams());
