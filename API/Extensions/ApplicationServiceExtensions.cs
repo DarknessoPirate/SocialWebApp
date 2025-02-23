@@ -24,6 +24,7 @@ public static class ApplicationServiceExtensions
       services.AddScoped<ITokenService, TokenService>();
       services.AddScoped<IUserRepository, UserRepository>();
       services.AddScoped<ILikesRepository, LikesRepository>();
+      services.AddScoped<IMessageRepository, MessageRepository>();
       services.AddScoped<IPhotoService, PhotoService>();
       services.AddScoped<ActivityLogger>();
       services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies()); // code to find all the automapper profiles by searching the assemblies
