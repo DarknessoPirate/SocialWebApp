@@ -16,10 +16,15 @@
             <a routerLink="/messages" routerLinkActive="active-nav-item"
                class="nav-link">Messages</a>
          </li>
+         <li class="nav-item" *appHasRole="['Admin','Moderator']">
+            <a routerLink="/admin" routerLinkActive="active-nav-item"
+               class="nav-link">Admin</a>
+         </li>
          }
          <li class="nav-item">
-            <a routerLink="/errors" routerLinkActive="active-nav-item"
-               class="nav-link">Errors</a>
+
+            <a routerLink="/errors" routerLinkActive="active-nav-item" 
+               class="nav-link">Errors</a> <!--TODO: Remove this later when finished testing-->
          </li>
       </ul>
 
