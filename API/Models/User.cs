@@ -1,14 +1,15 @@
 using System;
 using API.Extensions;
+using Microsoft.AspNetCore.Identity;
 
 namespace API.Models;
 
-public class User
+public class User : IdentityUser<int> // use int as id
 {
-   public int Id { get; set; } // entity uses ID as key by default, if it's int i automatically increments their ids when creating new users
-   public required string Username { get; set; }
-   public byte[] PasswordHash { get; set; } = [];
-   public byte[] PasswordSalt { get; set; } = [];
+   // entity uses ID as key by default, if it's int i automatically increments their ids when creating new users
+   // IdentityUser has an Id field
+   // IdentityUser has a username field
+   // IdentityUser has a PasswordHash field
 
    public DateOnly DateOfBirth { get; set; }
    public required string KnownAs { get; set; }
@@ -24,7 +25,8 @@ public class User
    public List<UserLike> LikedBy { get; set; } = [];
    public List<UserLike> LikedUsers { get; set; } = [];
    public List<Message> MessagesSent { get; set; } = [];
-   public List<Message> MessagesReceived {get;set;} = [];
+   public List<Message> MessagesReceived { get; set; } = [];
+   public ICollection<UserRole> UserRoles { get; set; } = [];
 
    // Automapper will use Get methods to fill the matching fields in dtos. In this example it will fill Age field thanks to GetAge method
    // public int GetAge()

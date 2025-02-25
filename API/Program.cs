@@ -3,9 +3,11 @@ using API.Data;
 using API.Extensions;
 using API.Interfaces;
 using API.Middleware;
+using API.Models;
 using API.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -64,7 +66,9 @@ try
 {
    var context = services.GetRequiredService<DataContext>();
    await context.Database.MigrateAsync();
-   await Seed.SeedUsers(context);
+   var userManager = services.GetRequiredService<UserManager<User>>();
+   var roleManager = services.GetRequiredService<RoleManager<Role>>();
+   await Seed.SeedUsers(userManager, roleManager);
 
 }
 catch (Exception ex)

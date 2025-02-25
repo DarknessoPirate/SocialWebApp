@@ -18,7 +18,7 @@ namespace API.Data.Repositories
       public async Task<MemberDTO?> GetMemberAsync(string username)
       {
          return await context.Users
-            .Where(x => x.Username == username)
+            .Where(x => x.UserName == username)
             .ProjectTo<MemberDTO>(mapper.ConfigurationProvider) // map users into member dto right after selecting
             .SingleOrDefaultAsync();
       }
@@ -28,7 +28,7 @@ namespace API.Data.Repositories
          var query = context.Users.AsQueryable();
 
          // exclude self 
-         query = query.Where(x => x.Username != userParams.CurrentUsername);
+         query = query.Where(x => x.UserName != userParams.CurrentUsername);
 
          // gender filter
          if (userParams.Gender != null)
@@ -57,7 +57,7 @@ namespace API.Data.Repositories
       {
          return await context.Users
                   .Include(x => x.Photos)
-                  .SingleOrDefaultAsync(user => user.Username == username);
+                  .SingleOrDefaultAsync(user => user.UserName == username);
       }
 
       public async Task<IEnumerable<User>> GetUsersAsync()

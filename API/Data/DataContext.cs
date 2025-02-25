@@ -1,12 +1,16 @@
 using System;
 using API.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Data;
 
-public class DataContext(DbContextOptions options) : DbContext(options)
+public class DataContext(DbContextOptions options) :
+IdentityDbContext<User, Role, int, IdentityUserClaim<int>, UserRole,
+IdentityUserLogin<int>, IdentityRoleClaim<int>, IdentityUserToken<int>>(options) // config the entities to use int as id
 {
-   public DbSet<User> Users { get; set; }
+   // IdentityDbContext has a DbSet for Users
    public DbSet<UserLike> Likes { get; set; }
    public DbSet<Message> Messages { get; set; }
 
@@ -14,8 +18,22 @@ public class DataContext(DbContextOptions options) : DbContext(options)
    {
       base.OnModelCreating(modelBuilder);
 
+      // one to many user <- roles
       modelBuilder.Entity<User>()
-         .HasIndex(u => u.Username)
+         .HasMany(u => u.UserRoles) // user can have many UserRoles
+         .WithOne(ur => ur.User) // Each UserRole only linked to one User
+         .HasForeignKey(ur => ur.UserId) 
+         .IsRequired();
+
+      // one to many role <- users
+      modelBuilder.Entity<Role>()
+         .HasMany(r => r.UserRoles) // role has many UserRoles
+         .WithOne(ur => ur.Role) // each UserRole linked to one Role
+         .HasForeignKey(ur => ur.RoleId)
+         .IsRequired();
+
+      modelBuilder.Entity<User>()
+         .HasIndex(u => u.UserName)
          .IsUnique();
 
       modelBuilder.Entity<UserLike>()

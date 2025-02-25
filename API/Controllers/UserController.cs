@@ -16,8 +16,6 @@ namespace API.Controllers;
 [Authorize]
 public class UsersController(IUserRepository userRepository, IMapper mapper, IPhotoService photoService) : BaseApiController
 {
-
-
    [HttpGet]
    public async Task<ActionResult<IEnumerable<MemberDTO>>> GetUsers([FromQuery] UserParams userParams)
    {
@@ -28,8 +26,6 @@ public class UsersController(IUserRepository userRepository, IMapper mapper, IPh
 
       return Ok(users);
    }
-
-
 
    [HttpGet("{username}")]
    public async Task<ActionResult<MemberDTO>> GetUser(string username)
@@ -84,7 +80,7 @@ public class UsersController(IUserRepository userRepository, IMapper mapper, IPh
 
       if (await userRepository.SaveAllAsync())
          // endpoint name (/api/Users) , the username      ,  the resource to return 
-         return CreatedAtAction(nameof(GetUser), new { username = user.Username }, mapper.Map<PhotoDTO>(photo)); // adds location header to the response
+         return CreatedAtAction(nameof(GetUser), new { username = user.UserName }, mapper.Map<PhotoDTO>(photo)); // adds location header to the response
 
       return BadRequest("Problem adding photo");
    }
