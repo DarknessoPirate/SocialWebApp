@@ -8,6 +8,7 @@ public class Photo
    public int Id { get; set; }
    public required string Url { get; set; }
    public bool IsMain { get; set; }
+   public bool IsBackground { get; set; }
    public string? PublicId { get; set; }
 
    // Navigation property []to make the user(owner of photo) non nullable, without it, it allows user id to be null]

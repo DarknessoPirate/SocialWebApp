@@ -3,5 +3,6 @@ export interface User {
    knownAs: string;
    token: string;
    photoUrl?: string;
+   bgUrl?: string;
    roles: String[];
 }

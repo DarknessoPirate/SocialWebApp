@@ -16,7 +16,9 @@ namespace API.Helpers
       {
          CreateMap<User, MemberDTO>()
             .ForMember(x => x.Age, o => o.MapFrom(s => s.DateOfBirth.CalculateAge()))
-            .ForMember(x => x.PhotoUrl, options => options.MapFrom(source => source.Photos.FirstOrDefault(x => x.IsMain)!.Url)); // automapper will set photoUrl to null if no photo found, thus ! null forgiving operator here
+            .ForMember(x => x.PhotoUrl, options => options.MapFrom(source => source.Photos.FirstOrDefault(x => x.IsMain)!.Url)) // automapper will set photoUrl to null if no photo found, thus ! null forgiving operator here
+            .ForMember(x => x.BgUrl, options => options.MapFrom(source => source.Photos.FirstOrDefault(x => x.IsBackground)!.Url));
+
 
          CreateMap<Photo, PhotoDTO>();
 

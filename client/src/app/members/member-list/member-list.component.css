@@ -1,7 +1,52 @@
 .filter-text {
-   width: 70px;
+   width: 90px;
+   box-sizing: border-box;
 }
 
 .filter-select {
    width: 130px;
+}
+
+.col-custom {
+   width: 20%;
+}
+
+.filter-container {
+   position: relative;
+   display: inline-block;
+}
+
+.filter-popup {
+   position: absolute;
+   top: calc(100% + 5px); 
+   left: 10px;
+   width: 300px;
+   background-color: white;
+   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+   border-radius: 12px;
+   border: 1px solid #e0e0e0;
+   padding: 15px;
+   transition: transform 0.2s ease-out, opacity 0.3s ease;
+   opacity: 0;
+   transform: translateY(-10px);  /* Start slightly above */
+   z-index: 999;
+   pointer-events: none;  /* Prevent clicks when hidden */
+}
+
+.filter-popup.show {
+   opacity: 1;
+   transform: translateY(0);  /* Slide to its original position */
+   pointer-events: auto;  /* Enable clicks when visible */
+}
+
+
+
+.btn-primary {
+   position: relative;
+   z-index: 20;
+}
+
+.btn-outline-primary {
+   position: relative;
+   z-index: 20;
 }
