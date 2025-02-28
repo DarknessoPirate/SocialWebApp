@@ -4,13 +4,15 @@ import { User } from '../_models/user';
 import { map } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { LikesService } from './likes.service';
+import { PresenceService } from './presence.service';
 
 @Injectable({
    providedIn: 'root'
 })
 export class AccountService {
-   private http = inject(HttpClient);
-   private _likeService = inject(LikesService)
+   private _httpClient = inject(HttpClient);
+   private _likeService = inject(LikesService);
+   private _presenceService = inject(PresenceService);
    baseUrl = environment.apiUrl;
    currentUser = signal<User | null>(null);
    roles = computed(() => {
@@ -25,7 +27,7 @@ export class AccountService {
 
    login(model: any) {
 
-      return this.http.post<User>(this.baseUrl + "account/login", model).pipe(
+      return this._httpClient.post<User>(this.baseUrl + "account/login", model).pipe(
          map(user => {
             if (user) {
                this.setCurrentUser(user)
@@ -37,7 +39,7 @@ export class AccountService {
 
    register(model: any) {
 
-      return this.http.post<User>(this.baseUrl + "account/register", model).pipe(
+      return this._httpClient.post<User>(this.baseUrl + "account/register", model).pipe(
          map(user => {
             if (user) {
                this.setCurrentUser(user)
@@ -51,11 +53,13 @@ export class AccountService {
       localStorage.setItem('user', JSON.stringify(user));
       this.currentUser.set(user);
       this._likeService.getLikeIds();
+      this._presenceService.createHubConnection(user)
    }
 
    logout() {
       localStorage.removeItem('user');
       this.currentUser.set(null);
+      this._presenceService.stopHubConnection();
    }
 
 }

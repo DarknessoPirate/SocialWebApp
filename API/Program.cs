@@ -5,6 +5,7 @@ using API.Interfaces;
 using API.Middleware;
 using API.Models;
 using API.Services;
+using API.SignalR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -52,12 +53,14 @@ if (app.Environment.IsDevelopment())
 
 // UseCors allows for data fetching from the angular app with origin stated below
 app.UseMiddleware<ExceptionMiddleware>();
-app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200", "https://localhost:4200")); // must be declared before MapControllers() to work
+app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowCredentials() // allow credentials to make passing the token to SignalR hubs possible
+.WithOrigins("http://localhost:4200", "https://localhost:4200")); // must be declared before MapControllers() to work
 
 app.UseAuthentication(); // before MapControllers, before useAuthorization
 app.UseAuthorization(); // after useAuthentication
 app.MapControllers();
-
+app.MapHub<PresenceHub>("hubs/presence"); // maps users requests and routes them to the correct hub
+app.MapHub<MessageHub>("hubs/message");
 
 // Seed the data
 using var scope = app.Services.CreateScope();
@@ -66,6 +69,7 @@ try
 {
    var context = services.GetRequiredService<DataContext>();
    await context.Database.MigrateAsync();
+   await context.Database.ExecuteSqlRawAsync("DELETE FROM [Connections]"); // remove any existing connections if there are any when restarting
    var userManager = services.GetRequiredService<UserManager<User>>();
    var roleManager = services.GetRequiredService<RoleManager<Role>>();
    await Seed.SeedUsers(userManager, roleManager);

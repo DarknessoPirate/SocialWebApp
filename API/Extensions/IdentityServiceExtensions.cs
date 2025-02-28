@@ -36,12 +36,28 @@ public static class IdentityServiceExtensions
                 ValidateIssuer = false,
                 ValidateAudience = false,
              };
+
+             // pass the token to signalR on connection ( without it it cant get the token properly)
+             options.Events = new JwtBearerEvents
+             {
+                OnMessageReceived = context =>
+                {
+                   var accessToken = context.Request.Query["access_token"];
+                   var path = context.HttpContext.Request.Path;
+                   if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs")) 
+                   {
+                     context.Token = accessToken;
+                   }
+
+                   return Task.CompletedTask;
+                }
+             };
           });
 
       // create policies to authenticate users more easily based on rules
       services.AddAuthorizationBuilder()
          .AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"))
-         .AddPolicy("ModeratePhotoRole", policy => policy.RequireRole("Admin","Moderator"));
+         .AddPolicy("ModeratePhotoRole", policy => policy.RequireRole("Admin", "Moderator"));
 
 
       return services;

@@ -109,6 +109,30 @@ public class UsersController(IUserRepository userRepository, IMapper mapper, IPh
       return BadRequest("There was a problem setting the main photo");
    }
 
+   [HttpPut("set-bg-photo/{photoId:int}")]
+   public async Task<ActionResult> SetBackgroundPhoto(int photoId)
+   {
+      var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
+
+      if (user == null)
+         return BadRequest("Could not find user");
+
+      var photo = user.Photos.FirstOrDefault(p => p.Id == photoId);
+
+      if(photo == null || photo.IsMain)
+         return BadRequest("Cannot use this photo as background photo");
+
+      var currentBackground = user.Photos.FirstOrDefault(p => p.IsBackground);
+
+      if (currentBackground != null) currentBackground.IsBackground = false;
+      photo.IsBackground = true;
+
+      if(await userRepository.SaveAllAsync())
+         return NoContent();
+
+      return BadRequest("There was a problem setting the main photo");
+   }
+
    [HttpDelete("delete-photo/{photoId:int}")]
    public async Task<ActionResult> DeletePhoto(int photoId){
       var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());

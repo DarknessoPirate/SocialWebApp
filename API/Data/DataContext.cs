@@ -1,4 +1,5 @@
 using System;
+using API.DTOs;
 using API.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -13,6 +14,8 @@ IdentityUserLogin<int>, IdentityRoleClaim<int>, IdentityUserToken<int>>(options)
    // IdentityDbContext has a DbSet for Users
    public DbSet<UserLike> Likes { get; set; }
    public DbSet<Message> Messages { get; set; }
+   public DbSet<Group> Groups { get; set; }
+   public DbSet<Connection> Connections { get; set; }
 
    protected override void OnModelCreating(ModelBuilder modelBuilder)
    {
@@ -22,7 +25,7 @@ IdentityUserLogin<int>, IdentityRoleClaim<int>, IdentityUserToken<int>>(options)
       modelBuilder.Entity<User>()
          .HasMany(u => u.UserRoles) // user can have many UserRoles
          .WithOne(ur => ur.User) // Each UserRole only linked to one User
-         .HasForeignKey(ur => ur.UserId) 
+         .HasForeignKey(ur => ur.UserId)
          .IsRequired();
 
       // one to many role <- users
