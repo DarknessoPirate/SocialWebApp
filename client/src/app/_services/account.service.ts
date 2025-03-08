@@ -14,7 +14,7 @@ export class AccountService {
    private _likeService = inject(LikesService);
    private _presenceService = inject(PresenceService);
    baseUrl = environment.apiUrl;
-   currentUser = signal<User | null>(null);
+   currentUser = signal<User | null>(this.getStoredUser());
    roles = computed(() => {
       const user = this.currentUser();
       if (user && user.token) {
@@ -55,6 +55,15 @@ export class AccountService {
       this._likeService.getLikeIds();
       this._presenceService.createHubConnection(user)
    }
+
+   isLoggedIn(): boolean {
+      return this.currentUser() !== null;
+    }
+
+    private getStoredUser(): User | null {
+      const userJson = localStorage.getItem('user');
+      return userJson ? JSON.parse(userJson) : null;
+    }
 
    logout() {
       localStorage.removeItem('user');

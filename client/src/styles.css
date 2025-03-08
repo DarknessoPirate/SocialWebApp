@@ -4,6 +4,19 @@
    border-radius: 4px;
 }
 
+.mt-80 {
+   margin-top: 80px !important;
+}
+
+html, body {
+   margin: 0;
+   padding: 0;
+   width: 100vw;
+   height: 100vh;
+   overflow-x: hidden; /* Prevents horizontal scrolling */
+}
+
+
 /* Hover state */
 .nav-tabs > li.open, .member-tabset > .nav-tabs > li:hover {
    border-bottom: 4px solid #fbcdcf; /* Keep the bottom border on hover */

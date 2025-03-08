@@ -1,0 +1,21 @@
+.form-container {
+  width: 100%;
+}
+
+.step-container {
+  position: relative; /* Keep container size unchanged */
+  width: 100%;
+  height: auto; /* Or a fixed height if needed */
+  min-height: 250px; /* Ensure space for content */
+  overflow: hidden; /* Prevent unwanted scrolling */
+}
+
+.step-container > div {
+  position: absolute; /* Prevent layout shift */
+  width: 100%;
+  top: 0;
+  left: 0;
+}
+
+
+

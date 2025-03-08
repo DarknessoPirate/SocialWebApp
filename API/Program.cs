@@ -19,6 +19,11 @@ using Scalar.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Configuration
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
+
 
 builder.Services.AddApplicationServices(builder.Configuration);  // Extension function created for the purpose of delegating the service adding into another function created in extension folder
 builder.Services.AddIdentityServices(builder.Configuration);
@@ -29,7 +34,10 @@ builder.Services.AddOpenApi(options =>
 
 
 
-
+foreach (var key in builder.Configuration.AsEnumerable())
+{
+    Console.WriteLine($"{key.Key}: {key.Value}");
+}
 
 var app = builder.Build();
 

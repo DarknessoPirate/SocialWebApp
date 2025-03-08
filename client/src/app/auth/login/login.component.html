@@ -1,0 +1,11 @@
+<div class="form-container">
+    <h2 class="text-center text-primary">Login</h2>
+    <form [formGroup]="loginForm" (ngSubmit)="login()">
+      <app-text-input [formControl]="$any(loginForm.controls['username'])" label="Username"></app-text-input>
+      <app-text-input [formControl]="$any(loginForm.controls['password'])" label="Password" type="password"></app-text-input>
+  
+      <div class="text-center">
+        <button [disabled]="!loginForm.valid" class="btn btn-success w-100" type="submit">Login</button>
+      </div>
+    </form>
+  </div>

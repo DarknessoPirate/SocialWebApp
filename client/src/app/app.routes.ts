@@ -13,15 +13,20 @@ import { preventUnsavedChangesGuard } from './_guards/prevent-unsaved-changes.gu
 import { memberDetailedResolver } from './_resolvers/member-detailed.resolver';
 import { AdminPanelComponent } from './admin/admin-panel/admin-panel.component';
 import { adminGuard } from './_guards/admin.guard';
+import { guestGuard } from './_guards/guest.guard';
+import { RegisterComponent } from './auth/register/register.component';
+import { AuthPageComponent } from './auth/auth-page/auth-page.component';
 
 export const routes: Routes = [
-   { path: '', component: HomeComponent },
+   
+   { path: 'auth', component: AuthPageComponent, canActivate: [guestGuard] },
    // make the paths children of a main root path to make the guards run on all of them, instead of individually specify guards for each path
    {
       path: '',
       runGuardsAndResolvers: 'always',
       canActivate: [authGuard],
       children: [
+         { path: 'home', component: HomeComponent },
          { path: 'members', component: MemberListComponent },
          { path: 'member/edit', component: MemberEditComponent, canDeactivate: [preventUnsavedChangesGuard] },
          { path: 'members/:username', component: MemberDetailsComponent, resolve: { member: memberDetailedResolver } },
@@ -33,5 +38,8 @@ export const routes: Routes = [
    { path: 'errors', component: TestErrorsComponent },
    { path: 'not-found', component: NotFoundComponent },
    { path: 'server-error', component: ServerErrorComponent },
-   { path: '**', component: HomeComponent, pathMatch: 'full' },
+
+   // redirect to home
+   { path: '', redirectTo: 'home', pathMatch: 'full' },
+   { path: '**', redirectTo: 'home', pathMatch: 'full' }
 ];

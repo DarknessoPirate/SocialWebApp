@@ -1,0 +1,49 @@
+<form [formGroup]="registerForm" (ngSubmit)="register()">
+   <h2 class="text-center text-primary">Sign up</h2>
+   <hr>
+
+   <!-- Animated Container -->
+   <div class="step-container">
+      <div *ngIf="step === 1" [@slideAnimation]="slideAnimationParams">
+         <div class="mb-3">
+            <label style="margin-right: 10px;">Gender: </label>
+            <label class="form-check-label" style="margin-right: 10px;">
+               <input type="radio" class="form-check-input me-2" value="male" formControlName="gender">Male
+            </label>
+            <label class="form-check-label">
+               <input type="radio" class="form-check-input me-2" value="female" formControlName="gender">Female
+            </label>
+         </div>
+         <app-text-input [formControl]="$any(registerForm.controls['username'])" [label]="'Username'"></app-text-input>
+         <app-text-input [formControl]="$any(registerForm.controls['knownAs'])" [label]="'Name'"></app-text-input>
+      </div>
+
+      <div *ngIf="step === 2" [@slideAnimation]="slideAnimationParams">
+         <app-date-picker [formControl]="$any(registerForm.controls['dateOfBirth'])" [label]="'Date of birth'"
+            [maxDate]="maxDate"></app-date-picker>
+         <app-text-input [formControl]="$any(registerForm.controls['city'])" [label]="'City'"></app-text-input>
+         <app-text-input [formControl]="$any(registerForm.controls['country'])" [label]="'Country'"></app-text-input>
+      </div>
+
+      <div *ngIf="step === 3" [@slideAnimation]="slideAnimationParams">
+         <app-text-input [formControl]="$any(registerForm.controls['password'])" [label]="'Password'"
+            [type]="'password'"></app-text-input>
+         <app-text-input [formControl]="$any(registerForm.controls['confirmPassword'])" [label]="'Confirm password'"
+            [type]="'password'"></app-text-input>
+
+         <div *ngIf="validationErrors.length > 0" class="alert alert-danger text-start">
+            <ul>
+               <li *ngFor="let error of validationErrors">{{error}}</li>
+            </ul>
+         </div>
+      </div>
+   </div>
+
+   <!-- Navigation Buttons -->
+   <div class="form-group text-center">
+      <button *ngIf="step > 1" class="btn btn-outline-primary me-2" (click)="prevStep()" type="button">Back</button>
+      <button *ngIf="step < 3" class="btn btn-outline-success me-2" (click)="nextStep()" type="button">Next</button>
+      <button *ngIf="step === 3" [disabled]="!registerForm.valid" class="btn btn-success"
+         type="submit">Register</button>
+   </div>
+</form>

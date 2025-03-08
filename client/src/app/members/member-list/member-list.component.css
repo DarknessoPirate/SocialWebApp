@@ -7,6 +7,10 @@
    width: 130px;
 }
 
+.mt-20 {
+   padding-top: 80px;
+}
+
 .col-custom {
    width: 20%;
 }
