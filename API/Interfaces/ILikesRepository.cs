@@ -13,6 +13,7 @@ namespace API.Interfaces
       Task<UserLike?> GetUserLike(int sourceUserId, int targetUserId);
       Task<PageResult<MemberDTO>> GetUserLikes(LikeParams likeParams);
       Task<IEnumerable<int>> GetCurrentUserLikeIds(int currentUserId);
+      Task<IEnumerable<LikeNotificationDTO>> GetLatestLikesForUser(int currentUserId, int limit = 5);
       void AddLike(UserLike like);
       void DeleteLike(UserLike like);
       Task<bool> SaveChanges();

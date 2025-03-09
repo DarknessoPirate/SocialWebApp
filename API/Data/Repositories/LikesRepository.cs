@@ -29,6 +29,17 @@ namespace API.Data.Repositories
          return await context.Likes.Where(x => x.UserId == currentUserId).Select(x => x.LikedUserId).ToListAsync();
       }
 
+      public async Task<IEnumerable<LikeNotificationDTO>> GetLatestLikesForUser(int currentUserId, int limit = 5)
+      {
+         return await context.Likes
+             .Where(l => l.LikedUserId == currentUserId)
+             .Include(l => l.User)
+             .ThenInclude(u => u.Photos)
+             .OrderByDescending(l => l.CreatedAt)
+             .Take(limit)
+             .ProjectTo<LikeNotificationDTO>(mapper.ConfigurationProvider)
+             .ToListAsync();
+      }
       public async Task<PageResult<MemberDTO>> GetUserLikes(LikeParams likeParams)
       {
          var likes = context.Likes.AsQueryable();

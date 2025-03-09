@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Member } from '../_models/member';
 import { PageResult } from '../_models/pagination';
 import { setPaginatedResult, setPaginationHeaders } from '../_helpers/paginationHelper';
+import { LikeNotification } from '../_models/likeNotification';
 
 @Injectable({
    providedIn: 'root'
@@ -13,6 +14,7 @@ export class LikesService {
    private _httpClient = inject(HttpClient);
    likeIds = signal<number[]>([]);
    paginatedResult = signal<PageResult<Member[]> | null>(null);
+   likeNotifications = signal<LikeNotification[]>([]);
 
    toggleLike(targetId: number) {
       return this._httpClient.post(`${this.baseUrl}likes/${targetId}`, {})
@@ -32,6 +34,16 @@ export class LikesService {
          next: ids => this.likeIds.set(ids)
       });
    }
+
+   getLatestLikeNotifications() {
+    this._httpClient.get<LikeNotification[]>(`${this.baseUrl}likes/latest`)
+      .subscribe({
+        next: (notifications) =>{
+         this.likeNotifications.set(notifications);
+        },
+        error: (err) => console.log(err)
+      });
+  }
 
 
 }

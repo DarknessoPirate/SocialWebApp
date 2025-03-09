@@ -26,7 +26,7 @@ namespace API.Controllers
          var sender = await userRepository.GetUserByUsernameAsync(username);
          var recipient = await userRepository.GetUserByUsernameAsync(createMessageDTO.RecipientUsername);
 
-         if (recipient == null || sender == null || sender.UserName == null || recipient.UserName == null) 
+         if (recipient == null || sender == null || sender.UserName == null || recipient.UserName == null)
             return BadRequest("Cannot send message at this time");
 
          var message = new Message
@@ -65,11 +65,27 @@ namespace API.Controllers
          return Ok(messageThread);
       }
 
+      [HttpGet("latest-messages")]
+      public async Task<ActionResult<IEnumerable<MessageDTO>>> GetLatestMessagesFromUniqueUsers([FromQuery] PaginationParams paginationParams)
+      {
+         var username = User.GetUsername();
+         var messages = await messageRepository.GetLatestMessagesFromUniqueUsers(username, paginationParams);
+
+         // Add pagination metadata to response headers
+         Response.Headers.Add("Pagination", System.Text.Json.JsonSerializer.Serialize(
+             new PaginationHeader(messages.CurrentPage, messages.PageSize, messages.TotalCount, messages.TotalPages)
+         ));
+
+         return Ok(messages);
+      }
+
+
+
       [HttpDelete("{id}")]
       public async Task<ActionResult> DeleteMessage(int id)
       {
          var username = User.GetUsername();
-         var message = await messageRepository.GetMessage(id); 
+         var message = await messageRepository.GetMessage(id);
 
          if (message == null)
             return BadRequest("Message not found");
@@ -78,7 +94,7 @@ namespace API.Controllers
          if (message.SenderUsername != username && message.RecipientUsername != username)
             return Forbid();
 
-         if (message.SenderUsername == username) 
+         if (message.SenderUsername == username)
             message.SenderDeleted = true; // mark as deleted by sender
 
          if (message.RecipientUsername == username)

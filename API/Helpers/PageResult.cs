@@ -24,10 +24,15 @@ namespace API.Helpers
 
       public static async Task<PageResult<T>> CreateAsync(IQueryable<T> source, int pageNumber, int pageSize)
       {
-         var count = await source.CountAsync();
-         var items = await source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+         var count = await source.CountAsync(); // Get total items count
 
-         return new PageResult<T>(items,count,pageNumber,pageSize);
+            // Apply pagination
+            var items = await source
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PageResult<T>(items, count, pageNumber, pageSize);
       }
 
    }

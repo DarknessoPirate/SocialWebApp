@@ -22,17 +22,35 @@ namespace API.Helpers
 
          CreateMap<Photo, PhotoDTO>();
 
-         CreateMap<MemberUpdateDTO,User>();
+         CreateMap<MemberUpdateDTO, User>();
          CreateMap<RegisterDTO, User>();
 
-         CreateMap<string,DateOnly>().ConvertUsing(s => DateOnly.Parse(s));
+         CreateMap<string, DateOnly>().ConvertUsing(s => DateOnly.Parse(s));
 
          CreateMap<Message, MessageDTO>()
             .ForMember(m => m.SenderPhotoUrl, o => o.MapFrom(s => s.Sender.Photos.FirstOrDefault(p => p.IsMain)!.Url))
             .ForMember(m => m.RecipientPhotoUrl, o => o.MapFrom(s => s.Recipient.Photos.FirstOrDefault(p => p.IsMain)!.Url));
-            
+
+         // Global map to convert dates to UTC (SQLITE doesn't handle utc)
          CreateMap<DateTime, DateTime>().ConvertUsing(d => DateTime.SpecifyKind(d, DateTimeKind.Utc));
+         // Global map to also handle nullable types
          CreateMap<DateTime?, DateTime?>().ConvertUsing(d => d.HasValue ? DateTime.SpecifyKind(d.Value, DateTimeKind.Utc) : null);
+
+         // Auto-map CreatedAt to CreatedAt. The above DateTime->DateTime rule ensures it's UTC.
+         CreateMap<UserLike, LikeNotificationDTO>()
+            .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.User.UserName))
+            .ForMember(dest => dest.PhotoUrl, opt => opt.MapFrom(src =>
+                src.User.Photos
+                   .Where(p => p.IsMain)
+                   .Select(p => p.Url)
+                   .FirstOrDefault() ?? string.Empty
+            ));
+
+         CreateMap<Message, MessageDTO>()
+            .ForMember(d => d.SenderPhotoUrl, opt => opt.MapFrom(s => s.Sender.Photos.FirstOrDefault(p => p.IsMain).Url))
+                           
+            .ForMember(d => d.RecipientPhotoUrl, opt => opt.MapFrom(s => s.Recipient.Photos.FirstOrDefault(p => p.IsMain).Url));
+        
 
       }
    }

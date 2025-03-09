@@ -1,65 +1,128 @@
 <nav class="navbar navbar-expand-md navbar-dark fixed-top navbar-custom">
    <div class="container">
-      <a class="navbar-brand" routerLink="/">Social App</a>
+      <a class="navbar-brand" routerLink="home">Social App</a>
 
       <ul class="navbar-nav me-auto mb-2 mb-md-0">
          @if (accountService.currentUser()) {
          <li class="nav-item">
-            <a routerLink="/members" routerLinkActive="active-nav-item"
-               class="nav-link">Suggestions</a>
+            <a routerLink="/members" routerLinkActive="active-nav-item" class="nav-link">Suggestions</a>
          </li>
          <li class="nav-item">
-            <a routerLink="/lists" routerLinkActive="active-nav-item"
-               class="nav-link">Lists</a>
+            <a routerLink="/lists" routerLinkActive="active-nav-item" class="nav-link">Lists</a>
          </li>
          <li class="nav-item">
-            <a routerLink="/messages" routerLinkActive="active-nav-item"
-               class="nav-link">Messages</a>
+            <a routerLink="/messages" routerLinkActive="active-nav-item" class="nav-link">Messages</a>
          </li>
          <li class="nav-item" *appHasRole="['Admin','Moderator']">
-            <a routerLink="/admin" routerLinkActive="active-nav-item"
-               class="nav-link">Admin</a>
+            <a routerLink="/admin" routerLinkActive="active-nav-item" class="nav-link">Admin</a>
          </li>
          }
-         <li class="nav-item">
-
-            <a routerLink="/errors" routerLinkActive="active-nav-item" 
-               class="nav-link">Errors</a> <!--TODO: Remove this later when finished testing-->
+         <li class="nav-item" *appHasRole="['Admin','Moderator']">
+            <a routerLink="/errors" routerLinkActive="active-nav-item" class="nav-link">Errors</a>
+            <!--TODO: Remove this later when finished testing-->
          </li>
       </ul>
 
       @if (accountService.currentUser()) {
-      <div class="profile-picture">
-         <img
-            [src]="accountService.currentUser()?.photoUrl || 'assets/user.png'"
-            alt="main image" width="40" height="40">
-      </div>
-      <div dropdown class="dropdown">
+      <div class="nav-icons">
 
-         <button id="button-basic" dropdownToggle type="button"
-            class="btn btn-primary dropdown-toggle"
-            aria-controls="dropdown-basic">
-            Welcome {{accountService.currentUser()?.knownAs}} <span
-               class="caret"></span>
-         </button>
-         <div *dropdownMenu class="dropdown-menu">
-            <a class="dropdown-item" routerLink="/member/edit">Edit profile</a>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" (click)="logout()">Logout</a>
+         <!-- Messages Dropdown -->
+         <div dropdown class="dropdown">
+            <button dropdownToggle type="button" class="icon-btn" (click)="fetchLatestMessages()">
+               <i class="fa fa-comments"></i>
+               <span class="badge" *ngIf="messageService.latestMessages().length > 0">
+                  {{ messageService.latestMessages().length }}
+               </span>
+            </button>
+            <div *dropdownMenu class="dropdown-menu dropdown-menu-end  dropdown-messages">
+               <p class="dropdown-header">Messages</p>
+               <div class="dropdown-divider"></div>
+
+               <ng-container *ngFor="let message of messageService.latestMessages(); let i = index;">
+                  <a routerLink="/messages" class="dropdown-item message-item">
+                     <img [src]="message.senderPhotoUrl || 'assets/user.png'" class="message-img">
+                     <div class="message-content">
+                        <div class="d-flex justify-content-between align-items-center">
+                           <strong>{{ message.senderUsername }}</strong>
+                           <span class="message-date">{{ message.messageSent | timeago }}</span>
+                        </div>
+                        <div class="message-details">
+                           <span class="message-text">{{ message.content }}</span>
+                        </div>
+                     </div>
+                  </a>
+
+                  <!-- insert spacer after each item, except the last -->
+                  <hr *ngIf="i < messageService.latestMessages().length - 1" class="message-separator">
+               </ng-container>
+
+               <ng-template #noMessages>
+                  <p class="dropdown-item text-muted">No messages yet.</p>
+               </ng-template>
+            </div>
+         </div>
+
+
+         <!-- Notifications Dropdown -->
+         <div dropdown class="dropdown" (onHidden)="onNotificationsTabHidden()">
+            <button dropdownToggle type="button" class="icon-btn"
+                    (click)="fetchLatestLikeNotifications()" 
+                    >
+              <i class="fa fa-bell"></i>
+              <!-- Show bubble only if likeNotificationsCount > 0 -->
+              <span class="badge" *ngIf="notificationsService.likeNotificationsCount > 0">
+                {{ notificationsService.likeNotificationsCount }}
+              </span>
+            </button>
+          
+            <div *dropdownMenu class="dropdown-menu dropdown-menu-end dropdown-notifications">
+              <p class="dropdown-header">Notifications</p>
+              <div class="dropdown-divider"></div>
+          
+              <!-- Use likesService to show actual items -->
+              <ng-container *ngIf="likesService.likeNotifications().length > 0; else noLikes">
+                <ng-container *ngFor="let like of likesService.likeNotifications(); let i = index">
+                  <a routerLink="/members/{{like.userId}}" class="dropdown-item message-item">
+                    <img [src]="like.photoUrl || 'assets/user.png'" class="message-img">
+                    <div class="message-content">
+                      <div class="d-flex justify-content-between align-items-center">
+                        <strong>{{ like.username }}</strong>
+                        <span class="message-date">{{ like.createdAt | timeago }}</span>
+                      </div>
+                      <div class="message-details">
+                        <!-- BOLD if userId is in newlyLikedUserIds -->
+                        <span class="message-text"
+                              [ngClass]="{'font-weight-bold': isUserInNotifications(like.userId)}">
+                          Has liked your profile
+                        </span>
+                      </div>
+                    </div>
+                  </a>
+                  <hr *ngIf="i < likesService.likeNotifications().length - 1" class="message-separator" />
+                </ng-container>
+              </ng-container>
+          
+              <ng-template #noLikes>
+                <p class="dropdown-item text-muted">No notifications yet.</p>
+              </ng-template>
+            </div>
+          </div>
+
+
+         <!-- Profile Picture-->
+         <div dropdown class="dropdown">
+            <button dropdownToggle type="button" class="profile-picture">
+               <img [src]="accountService.currentUser()?.photoUrl || 'assets/user.png'" alt="Profile Picture">
+            </button>
+            <div *dropdownMenu class="dropdown-menu dropdown-menu-end">
+               <p class="dropdown-header">Welcome {{accountService.currentUser()?.knownAs}}</p>
+               <div class="dropdown-divider"></div>
+               <a class="dropdown-item" routerLink="/member/edit">Edit Profile</a>
+               <div class="dropdown-divider"></div>
+               <a class="dropdown-item" (click)="logout()">Logout</a>
+            </div>
          </div>
       </div>
-      }
-
-      @if (!accountService.currentUser()){
-      <form #loginForm="ngForm" (ngSubmit)="login()" class="d-flex"
-         autocomplete="off">
-         <input name="username" [(ngModel)]="model.username"
-            class="form-control me-2" placeholder="Username">
-         <input name="password" [(ngModel)]="model.password"
-            class="form-control me-2" placeholder="Password"
-            type="password">
-         <button class="btn btn-outline-success" type="submit">Login</button>
-      </form>
       }
    </div>
 </nav>

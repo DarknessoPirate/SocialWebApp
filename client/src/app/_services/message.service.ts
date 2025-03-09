@@ -18,7 +18,9 @@ export class MessageService {
    hubConnection?: HubConnection;
    paginatedResult = signal<PageResult<Message[]> | null>(null); // messages array
    messageThread = signal<Message[]>([]);
+   latestMessages = signal<Message[]>([]);
 
+   // create the connection to the messages api hub, that will send events if something happens
    createHubConnection(user: User, otherUsername: string) {
       this.hubConnection = new HubConnectionBuilder()
          .withUrl(this.hubUrl + 'message?user=' + otherUsername, {
@@ -51,12 +53,14 @@ export class MessageService {
       })
    }
 
+   // stops the messages hub connection
    stopHubConnection() {
       if (this.hubConnection?.state === HubConnectionState.Connected) {
          this.hubConnection.stop().catch(error => console.log(error));
       }
    }
 
+   // get either sent/received messages by setting the container string to "Inbox" or "Outbox"
    getMessages(pageNumber: number, pageSize: number, container: string) {
       let params = setPaginationHeaders(pageNumber, pageSize)
       params = params.append('Container', container);
@@ -67,8 +71,26 @@ export class MessageService {
          })
    }
 
+   // Fetch the message thread between two users from the api
    getMessageThread(username: string) {
       return this._httpClient.get<Message[]>(this.baseUrl + 'messages/thread/' + username)
+   }
+
+   getLatestMessagesWithUniqueUsers() {
+      return this._httpClient.get<Message[]>(this.baseUrl + 'messages/latest-messages', { observe: 'response' })
+         .subscribe({
+            next: response => {
+               if (response.body) {
+                  const messages = response.body.sort((a, b) => 
+                     new Date(b.messageSent).getTime() - new Date(a.messageSent).getTime()
+                  ); // ✅ Sort newest to oldest
+                  
+                  this.latestMessages.set(messages); 
+                  console.log("✅ latestMessages updated:", this.latestMessages());
+               }
+            },
+            error: err => console.error("❌ Failed to fetch latest messages:", err)
+         });
    }
 
    async sendMessage(username: string, content: string) {

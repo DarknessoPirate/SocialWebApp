@@ -69,6 +69,7 @@ app.UseAuthorization(); // after useAuthentication
 app.MapControllers();
 app.MapHub<PresenceHub>("hubs/presence"); // maps users requests and routes them to the correct hub
 app.MapHub<MessageHub>("hubs/message");
+app.MapHub<NotificationsHub>("/hubs/notifications");
 
 // Seed the data
 using var scope = app.Services.CreateScope();

@@ -11,5 +11,6 @@ namespace API.Models
       public int UserId { get; set; }
       public User LikedUser { get; set; } = null!;
       public int LikedUserId { get; set; }
+      public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
    }
 }

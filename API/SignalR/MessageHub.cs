@@ -59,7 +59,7 @@ namespace API.SignalR
             SenderUsername = sender.UserName,
             Recipient = recipient,
             RecipientUsername = recipient.UserName,
-            Content = createMessageDTO.Content
+            Content = createMessageDTO.Content,
          };
 
          var groupName = GetGroupName(sender.UserName, recipient.UserName);

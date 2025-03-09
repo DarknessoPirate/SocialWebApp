@@ -75,7 +75,7 @@ namespace API.Data.Repositories
       public async Task<IEnumerable<MessageDTO>> GetMessageThread(string currentUsername, string recipientUsername)
       {
          var messages = await context.Messages
-                                       .Include(x => x.Sender) 
+                                       .Include(x => x.Sender)
                                        .ThenInclude(x => x.Photos)
                                        .Include(x => x.Recipient)
                                        .ThenInclude(x => x.Photos)
@@ -99,6 +99,33 @@ namespace API.Data.Repositories
          // return the thread
          return messages;
       }
+
+      public async Task<PageResult<MessageDTO>> GetLatestMessagesFromUniqueUsers(string username, PaginationParams paginationParams)
+{
+    // 1) Build a subquery that returns only the IDs of the "latest" (max date) messages per sender
+    var subQuery = context.Messages
+        .Where(m => m.RecipientUsername == username && !m.RecipientDeleted)
+        .GroupBy(m => m.SenderUsername)
+        .Select(g => g.OrderByDescending(x => x.MessageSent)
+                      .Select(x => x.Id)
+                      .First());
+
+    // 2) Use that subquery to find the matching Message entities
+    var latestMessagesQuery = context.Messages
+        .Where(m => subQuery.Contains(m.Id));
+
+    // 3) Project to MessageDTO via AutoMapper
+    var projected = latestMessagesQuery
+        .ProjectTo<MessageDTO>(mapper.ConfigurationProvider);
+
+    // 4) Apply your paging logic
+    return await PageResult<MessageDTO>.CreateAsync(
+        projected,
+        paginationParams.PageNumber,
+        paginationParams.PageSize
+    );
+}
+
 
       public void RemoveConnection(Connection connection)
       {
